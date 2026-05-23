@@ -1,26 +1,81 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ===========================================================
+   민족 어학원 — Design tokens (Tailwind v4 @theme)
+   palette ratio: white/beige 70 · navy 25 · pastel blue 5
+   ========================================================== */
+@theme {
+  /* Brand */
+  --color-brand-navy: #1e2a4a;
+  --color-brand-navy-dark: #131c34;
+  --color-brand-blue: #bfdbf7;
+  --color-brand-blue-soft: #e6f0fa;
+  --color-brand-beige: #f5efe6;
+  --color-brand-beige-soft: #fbf7f0;
+
+  /* Ink (text) */
+  --color-ink: #1e2a4a;
+  --color-ink-soft: #3d4a66;
+  --color-ink-mute: #8a95a8;
+  --color-ink-invert: #ffffff;
+
+  /* Surface / line */
+  --color-surface: #ffffff;
+  --color-line: #e8eaf0;
+  --color-line-strong: #c9ced6;
+
+  /* Typography */
+  --font-sans: "Pretendard Variable", "Noto Sans KR", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  /* Radius */
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(30, 42, 74, 0.06);
+  --shadow-md: 0 6px 20px rgba(30, 42, 74, 0.08);
+  --shadow-lg: 0 14px 40px rgba(30, 42, 74, 0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01", "ss02";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: var(--color-brand-blue);
+    color: var(--color-brand-navy);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Force Kakao "지도 퍼가기" widget to fill its parent (it sets inline 640x360). */
+.root_daum_roughmap,
+.root_daum_roughmap .wrap_map,
+.root_daum_roughmap .map_border,
+.root_daum_roughmap .map_border iframe {
+  width: 100% !important;
+  height: 100% !important;
+}
+.root_daum_roughmap { min-height: 280px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
