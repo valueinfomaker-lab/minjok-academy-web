@@ -23,44 +23,52 @@ declare global {
 }
 
 /** Embed Kakao "지도 퍼가기" widget.
- *  Inline width/height set by widget; we override to 100% via globals.css. */
+ *  Loader is async — poll for `window.daum.roughmap.Lander` after script tag. */
 export function KakaoMap() {
   const inited = useRef(false);
 
   useEffect(() => {
-    function init() {
-      if (inited.current) return true;
+    let cancelled = false;
+
+    // Ensure loader script is in DOM (idempotent).
+    if (!document.querySelector(`script[src="${LOADER_SRC}"]`)) {
+      const s = document.createElement("script");
+      s.src = LOADER_SRC;
+      s.async = true;
+      s.charset = "UTF-8";
+      document.head.appendChild(s);
+    }
+
+    function tryInit(attempts = 0) {
+      if (cancelled || inited.current) return;
       const Lander = window.daum?.roughmap?.Lander;
-      if (!Lander) return false;
-      try {
-        new Lander({
-          timestamp: TIMESTAMP,
-          key: KEY,
-          mapWidth: "640",
-          mapHeight: "360",
-        }).render();
-        inited.current = true;
-      } catch (e) {
-        console.error("kakao roughmap init failed", e);
+      if (Lander) {
+        try {
+          new Lander({
+            timestamp: TIMESTAMP,
+            key: KEY,
+            mapWidth: "640",
+            mapHeight: "360",
+          }).render();
+          inited.current = true;
+        } catch (e) {
+          console.error("kakao roughmap init failed", e);
+        }
+        return;
       }
-      return true;
+      if (attempts > 60) {
+        // give up after ~12s
+        console.warn("kakao roughmap loader did not appear");
+        return;
+      }
+      setTimeout(() => tryInit(attempts + 1), 200);
     }
 
-    if (init()) return;
+    tryInit();
 
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${LOADER_SRC}"]`,
-    );
-    if (existing) {
-      existing.addEventListener("load", () => init());
-      return;
-    }
-    const s = document.createElement("script");
-    s.charset = "UTF-8";
-    s.src = LOADER_SRC;
-    s.async = true;
-    s.onload = () => init();
-    document.head.appendChild(s);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
