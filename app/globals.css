@@ -59,17 +59,6 @@
   }
 }
 
-/* Force Kakao "지도 퍼가기" widget to fill its parent (it sets inline 640x360). */
-.root_daum_roughmap,
-.root_daum_roughmap > div,
-.root_daum_roughmap .wrap_map,
-.root_daum_roughmap .map_border,
-.root_daum_roughmap iframe {
-  width: 100% !important;
-  height: 100% !important;
-}
-.root_daum_roughmap { min-height: 280px; }
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
