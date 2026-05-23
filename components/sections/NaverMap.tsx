@@ -4,8 +4,10 @@ import Script from "next/script";
 import { useEffect, useRef } from "react";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
+// NCP의 신규 키는 `ncpKeyId`, 구버전 키는 `ncpClientId` 파라미터를 사용한다.
+// 둘 다 동작하지 않으면 NCP 콘솔에서 도메인 등록 여부를 확인할 것.
 const SDK_SRC = CLIENT_ID
-  ? `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${CLIENT_ID}`
+  ? `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${CLIENT_ID}`
   : "";
 
 // 학원 좌표 (서울 서대문구 응암로 68 가좌빌딩) — 정확한 값 측정 후 교체
@@ -67,6 +69,13 @@ export function NaverMap() {
   // Re-attempt init in case the SDK is already loaded by the time ref mounts.
   useEffect(() => {
     if (window.naver?.maps) init();
+    // surface auth failures in browser console
+    (window as unknown as { navermap_authFailure?: () => void }).navermap_authFailure =
+      () => {
+        console.error(
+          "Naver Maps auth failed — check ClientID and registered domain in NCP console",
+        );
+      };
   }, []);
 
   if (!CLIENT_ID) {
