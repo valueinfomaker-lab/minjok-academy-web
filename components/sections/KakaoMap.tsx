@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
-const TIMESTAMP = "1779533059268";
-const KEY = "oa9dpu4fum4";
+const TIMESTAMP = "1779534647921";
+const KEY = "nvqqp55cun6";
 const LOADER_SRC =
   "https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js";
 
