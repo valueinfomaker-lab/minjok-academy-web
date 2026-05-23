@@ -100,13 +100,14 @@ export const GALLERY: GalleryItem[] = [
 ];
 
 /* ===== Section 8 — Location/contact ===== */
+const ADDRESS_QUERY = "서울 서대문구 응암로 68 가좌빌딩";
+
 export const CONTACT = {
   address: "서울 서대문구 응암로 68 가좌빌딩 3층",
   tel: "02-373-6841",
   kakaoChannelUrl: "https://pf.kakao.com/_minjok",
-  kakaoMapUrl:
-    "https://map.kakao.com/?q=" +
-    encodeURIComponent("서울 서대문구 응암로 68 가좌빌딩"),
+  kakaoMapUrl: `https://map.kakao.com/?q=${encodeURIComponent(ADDRESS_QUERY)}`,
+  naverMapUrl: `https://map.naver.com/p/search/${encodeURIComponent(ADDRESS_QUERY)}`,
   hours: {
     weekday: "평일 09:00 ~ 22:00",
     weekend: "주말 휴무",

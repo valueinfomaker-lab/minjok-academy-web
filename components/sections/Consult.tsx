@@ -1,12 +1,18 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  Clock,
+  MessageCircle,
+  Navigation,
+  ExternalLink,
+} from "lucide-react";
 import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Heading } from "@/components/ui/Heading";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { NaverMap } from "@/components/sections/NaverMap";
 import { CONTACT } from "@/lib/data";
 
 export function Consult() {
@@ -88,9 +94,42 @@ export function Consult() {
             id="location"
             className="flex h-full flex-col gap-6 rounded-3xl bg-brand-beige-soft p-6 md:p-8"
           >
-            {/* 네이버맵 임베드 */}
-            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-white">
-              <NaverMap />
+            {/* 지도 앱 바로가기 카드 */}
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <span className="inline-flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-brand-blue-soft text-brand-navy">
+                  <Navigation size={22} strokeWidth={2} />
+                </span>
+                <div className="flex-1">
+                  <h3 className="text-base font-bold text-brand-navy md:text-lg">
+                    지도 앱에서 길 안내
+                  </h3>
+                  <p className="mt-1 text-sm text-ink-soft">
+                    {CONTACT.address}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-2 sm:grid-cols-2">
+                <a
+                  href={CONTACT.naverMapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#03C75A] px-5 text-sm font-bold text-white transition hover:brightness-95"
+                >
+                  네이버 지도
+                  <ExternalLink size={14} strokeWidth={2.5} />
+                </a>
+                <a
+                  href={CONTACT.kakaoMapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-navy px-5 text-sm font-bold text-white transition hover:bg-brand-navy-dark"
+                >
+                  카카오맵
+                  <ExternalLink size={14} strokeWidth={2.5} />
+                </a>
+              </div>
             </div>
 
             <div>
