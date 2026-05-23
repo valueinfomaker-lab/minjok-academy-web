@@ -1,22 +1,38 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useTransition } from "react";
 import { MapPin, Phone, Clock, MessageCircle, Navigation } from "lucide-react";
 import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Heading } from "@/components/ui/Heading";
 import { FadeIn } from "@/components/motion/FadeIn";
+import { sendConsult } from "@/app/actions/send-consult";
 import { CONTACT } from "@/lib/data";
 
+type Status = "idle" | "sending" | "sent" | "error";
+
 export function Consult() {
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
+  const [status, setStatus] = useState<Status>("idle");
+  const [errMsg, setErrMsg] = useState("");
+  const [pending, startTransition] = useTransition();
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO: replace with Server Action or Formspree
-    setStatus("sent");
-    (e.target as HTMLFormElement).reset();
-    setTimeout(() => setStatus("idle"), 6000);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    setStatus("sending");
+    setErrMsg("");
+    startTransition(async () => {
+      const res = await sendConsult(fd);
+      if (res.ok) {
+        setStatus("sent");
+        form.reset();
+        setTimeout(() => setStatus("idle"), 8000);
+      } else {
+        setStatus("error");
+        setErrMsg(res.error);
+      }
+    });
   }
 
   return (
@@ -57,6 +73,7 @@ export function Consult() {
             <label className="flex items-center gap-2 text-sm text-ink-mute">
               <input
                 type="checkbox"
+                name="consent"
                 required
                 className="h-4 w-4 rounded border-line-strong text-brand-navy"
               />
@@ -65,9 +82,10 @@ export function Consult() {
 
             <button
               type="submit"
-              className="mt-2 inline-flex h-14 items-center justify-center rounded-full bg-brand-navy px-8 text-base font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-navy-dark hover:shadow-lg"
+              disabled={pending}
+              className="mt-2 inline-flex h-14 items-center justify-center rounded-full bg-brand-navy px-8 text-base font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-brand-navy-dark hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
             >
-              무료 상담 신청
+              {pending ? "전송 중…" : "무료 상담 신청"}
             </button>
 
             {status === "sent" && (
@@ -76,6 +94,14 @@ export function Consult() {
                 className="text-center text-sm font-medium text-green-700"
               >
                 신청이 접수되었습니다. 영업일 기준 24시간 내 연락드리겠습니다.
+              </p>
+            )}
+            {status === "error" && (
+              <p
+                role="alert"
+                className="text-center text-sm font-medium text-red-700"
+              >
+                {errMsg}
               </p>
             )}
           </form>
