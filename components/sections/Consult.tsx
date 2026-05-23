@@ -6,7 +6,7 @@ import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Heading } from "@/components/ui/Heading";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { KakaoMap } from "@/components/sections/KakaoMap";
+import { NaverMap } from "@/components/sections/NaverMap";
 import { CONTACT } from "@/lib/data";
 
 export function Consult() {
@@ -88,9 +88,9 @@ export function Consult() {
             id="location"
             className="flex h-full flex-col gap-6 rounded-3xl bg-brand-beige-soft p-6 md:p-8"
           >
-            {/* 카카오맵 임베드 */}
+            {/* 네이버맵 임베드 */}
             <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-white">
-              <KakaoMap />
+              <NaverMap />
             </div>
 
             <div>
