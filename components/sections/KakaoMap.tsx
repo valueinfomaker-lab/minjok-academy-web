@@ -1,85 +1,89 @@
 "use client";
 
 import Script from "next/script";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
-const TIMESTAMP = "1779534647921";
-const KEY = "nvqqp55cun6";
-const LOADER_SRC =
-  "https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js";
+const APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
+const SDK_SRC = APP_KEY
+  ? `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${APP_KEY}&autoload=false`
+  : "";
+
+// 학원 좌표 (서울 서대문구 응암로 68 가좌빌딩) — 정확한 값 측정 후 교체 가능
+const LAT = 37.5765;
+const LNG = 126.9148;
+const MARKER_TITLE = "민족 어학원";
+
+type LatLngCtor = new (lat: number, lng: number) => unknown;
+type MapCtor = new (
+  container: HTMLElement,
+  options: { center: unknown; level: number },
+) => unknown;
+type MarkerCtor = new (opts: { position: unknown; map: unknown }) => unknown;
+type InfoCtor = new (opts: { content: string }) => {
+  open: (map: unknown, marker: unknown) => void;
+};
 
 declare global {
   interface Window {
-    daum?: {
-      roughmap?: {
-        Lander: new (opts: {
-          timestamp: string;
-          key: string;
-          mapWidth: string;
-          mapHeight: string;
-        }) => { render: () => void };
+    kakao?: {
+      maps?: {
+        load: (cb: () => void) => void;
+        LatLng: LatLngCtor;
+        Map: MapCtor;
+        Marker: MarkerCtor;
+        InfoWindow: InfoCtor;
       };
     };
   }
 }
 
-/** Embed Kakao "지도 퍼가기" widget.
- *  Uses next/script onReady so the Lander global is guaranteed by call time. */
+/** Embed Kakao map using the official JavaScript SDK.
+ *  Requires NEXT_PUBLIC_KAKAO_MAP_KEY (registered domain in Kakao dev console). */
 export function KakaoMap() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const inited = useRef(false);
 
   function init() {
     if (inited.current) return;
-    const Lander = window.daum?.roughmap?.Lander;
-    if (!Lander) {
-      // Script tag fired onReady but global not yet ready — retry briefly.
-      let attempts = 0;
-      const timer = setInterval(() => {
-        attempts += 1;
-        if (window.daum?.roughmap?.Lander) {
-          clearInterval(timer);
-          try {
-            new window.daum.roughmap.Lander!({
-              timestamp: TIMESTAMP,
-              key: KEY,
-              mapWidth: "640",
-              mapHeight: "360",
-            }).render();
-            inited.current = true;
-          } catch (e) {
-            console.error("kakao roughmap render failed", e);
-          }
-        } else if (attempts > 50) {
-          clearInterval(timer);
-          console.warn("kakao roughmap Lander never appeared");
-        }
-      }, 200);
-      return;
-    }
-    try {
-      new Lander({
-        timestamp: TIMESTAMP,
-        key: KEY,
-        mapWidth: "640",
-        mapHeight: "360",
-      }).render();
+    if (!window.kakao?.maps || !containerRef.current) return;
+    window.kakao.maps.load(() => {
+      const k = window.kakao!.maps!;
+      const center = new k.LatLng(LAT, LNG);
+      const map = new k.Map(containerRef.current!, { center, level: 3 });
+      const marker = new k.Marker({ position: center, map });
+      const info = new k.InfoWindow({
+        content: `<div style="padding:6px 10px;font-size:13px;font-weight:600;color:#1E2A4A;white-space:nowrap;">${MARKER_TITLE}</div>`,
+      });
+      info.open(map, marker);
       inited.current = true;
-    } catch (e) {
-      console.error("kakao roughmap render failed", e);
-    }
+    });
+  }
+
+  // Re-attempt init in case onReady fires before container ref is attached.
+  useEffect(() => {
+    if (window.kakao?.maps) init();
+  }, []);
+
+  if (!APP_KEY) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-brand-beige-soft p-6 text-center">
+        <div className="text-sm text-ink-soft">
+          <p className="font-semibold text-ink">카카오맵 키 설정 필요</p>
+          <p className="mt-2 text-ink-mute">
+            <code className="rounded bg-white px-1.5 py-0.5">
+              NEXT_PUBLIC_KAKAO_MAP_KEY
+            </code>{" "}
+            환경변수를 설정해 주세요.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
-      <div
-        id={`daumRoughmapContainer${TIMESTAMP}`}
-        className="root_daum_roughmap root_daum_roughmap_landing h-full w-full"
-      />
-      <Script
-        src={LOADER_SRC}
-        strategy="afterInteractive"
-        onReady={init}
-      />
+      <div ref={containerRef} className="h-full w-full" />
+      <Script src={SDK_SRC} strategy="afterInteractive" onReady={init} />
     </>
   );
 }
