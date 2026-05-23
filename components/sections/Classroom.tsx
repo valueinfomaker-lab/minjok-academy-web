@@ -11,7 +11,7 @@ export function Classroom() {
       <FadeIn className="text-center">
         <Eyebrow>Our Classroom</Eyebrow>
         <Heading as="h2" className="mt-3 text-brand-navy">
-          교실 안의 진짜 모습
+          교실 안의 모습
         </Heading>
         <p className="mx-auto mt-4 max-w-2xl text-base text-ink-soft md:text-lg">
           사진으로 보여드리는 우리 학원의 하루.
