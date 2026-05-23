@@ -153,17 +153,14 @@ export function Consult() {
             </div>
 
             <div className="mt-auto rounded-2xl bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-brand-navy">
-                전화·폼이 부담스러우시다면
-              </p>
-              <p className="mt-1 text-sm text-ink-soft">
+              <p className="text-sm text-ink-soft">
                 카카오톡으로 편하게 문의해 주세요.
               </p>
               <a
                 href={CONTACT.kakaoChannelUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#FEE500] px-5 text-sm font-bold text-[#3A1D1D] transition hover:brightness-95"
+                className="mt-3 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#FEE500] px-5 text-sm font-bold text-[#3A1D1D] transition hover:brightness-95"
               >
                 <MessageCircle size={18} fill="#3A1D1D" strokeWidth={0} />
                 카카오톡 채널 상담
